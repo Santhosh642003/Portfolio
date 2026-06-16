@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="0">
+<stop offset="0%" stop-color="#7afcd0"/><stop offset="100%" stop-color="#9d7bff"/></linearGradient></defs>
+<rect width="256" height="256" rx="56" fill="#07070b"/>
+<text x="50%" y="54%" text-anchor="middle" dominant-baseline="middle"
+ font-family="monospace" font-weight="700" font-size="120" fill="url(#g)">SN</text></svg>
