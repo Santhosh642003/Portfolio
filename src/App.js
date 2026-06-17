@@ -272,7 +272,7 @@ function App() {
               <div className="project-links">
                 {p.repo && <a href={p.repo} target="_blank" rel="noreferrer">Code</a>}
                 {p.demo && <a href={p.demo} target="_blank" rel="noreferrer">Live demo</a>}
-                {!p.repo && !p.demo && <span className="link-soon">Links coming soon</span>}
+                {!p.repo && !p.demo && <span className="link-soon"></span>}
               </div>
             </article>
           ))}
