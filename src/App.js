@@ -1,6 +1,84 @@
 import { useEffect, useState } from 'react';
 import './App.css';
 
+const RESUME_URL = '/Santhosh_Naik_Resume.pdf';   // the real PDF (Open in new tab)
+const RESUME_IMG = '/Santhosh_Naik_Resume.png';   // page-1 image for the preview
+
+function ResumeViewer() {
+  const [open, setOpen] = useState(false);
+  const [loaded, setLoaded] = useState(false);
+
+  function toggle() {
+    setOpen((o) => {
+      const next = !o;
+      if (next) setLoaded(true); // lazy-load the PDF on first open
+      return next;
+    });
+  }
+
+  return (
+    <div className={`resume-block ${open ? 'is-open' : ''}`}>
+      <button
+        className="resume-toggle"
+        onClick={toggle}
+        aria-expanded={open}
+        aria-controls="resume-panel"
+      >
+        <span className="resume-toggle__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M14 3v4a1 1 0 0 0 1 1h4" />
+            <path d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2z" />
+            <line x1="9" y1="12" x2="15" y2="12" />
+            <line x1="9" y1="16" x2="13" y2="16" />
+          </svg>
+        </span>
+        <span className="resume-toggle__label">View résumé</span>
+        <span className="resume-toggle__chev" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="6 9 12 15 18 9" />
+          </svg>
+        </span>
+      </button>
+
+      <div className="resume-panel" id="resume-panel" role="region" aria-label="Résumé preview">
+        <div className="resume-panel__inner">
+          <div className="resume-paper">
+            {loaded && (
+              <img
+                className="resume-paper__img"
+                src={RESUME_IMG}
+                alt="Résumé — first page"
+              />
+            )}
+            <div className="resume-paper__sheen" aria-hidden="true"></div>
+          </div>
+          <div className="resume-panel__bar">
+            <span className="resume-panel__hint">Preview &middot; first page</span>
+            <a className="resume-open" href={RESUME_URL} target="_blank" rel="noreferrer">
+              Open in new tab
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M15 3h6v6" /><path d="M10 14 21 3" />
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+              </svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+const skills = [
+  { name: 'Python', level: 92 },
+  { name: 'PyTorch', level: 85 },
+  { name: 'NLP / LLMs', level: 88 },
+  { name: 'React', level: 80 },
+  { name: 'SQL', level: 75 },
+  { name: 'Docker', level: 70 },
+];
+
+const RING_CIRC = 2 * Math.PI * 70; // r = 70
+
 const projects = [
   {
     title: 'BloodBets',
@@ -45,6 +123,13 @@ const projects = [
 
 function App() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [ringsIn, setRingsIn] = useState(false);
+
+  // fill rings to their level after first paint
+  useEffect(() => {
+    const id = requestAnimationFrame(() => setRingsIn(true));
+    return () => cancelAnimationFrame(id);
+  }, []);
 
   function scrollTo(id) {
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
@@ -138,31 +223,34 @@ function App() {
       <section id="skill-section" className="skills">
         <h2 className="section-head">Skills</h2>
         <div className="skill-container">
-          {[
-            { name: 'Python', cls: 'python' },
-            { name: 'PyTorch', cls: 'pytorch' },
-            { name: 'NLP / LLMs', cls: 'nlp' },
-            { name: 'React', cls: 'react' },
-            { name: 'SQL', cls: 'sql' },
-            { name: 'Docker', cls: 'docker' },
-          ].map((s) => (
-            <div className="skill" key={s.name}>
-              <div className="outer">
-                <div className="inner">
-                  <div className="skillName">{s.name}</div>
+          {skills.map((s) => {
+            const offset = ringsIn ? RING_CIRC * (1 - s.level / 100) : RING_CIRC;
+            return (
+              <div className="skill" key={s.name}>
+                <div className="outer">
+                  <div className="inner">
+                    <div className="skillName">{s.name}</div>
+                    <div className="skillPct">{s.level}%</div>
+                  </div>
                 </div>
+                <svg width="160" height="160">
+                  <defs>
+                    <linearGradient id="grad">
+                      <stop offset="0%" stopColor="#7afcd0" />
+                      <stop offset="100%" stopColor="#9d7bff" />
+                    </linearGradient>
+                  </defs>
+                  <circle
+                    className="ring"
+                    cx="80" cy="80" r="70"
+                    strokeLinecap="round"
+                    stroke="url(#grad)"
+                    style={{ strokeDasharray: RING_CIRC, strokeDashoffset: offset }}
+                  />
+                </svg>
               </div>
-              <svg width="160" height="160">
-                <defs>
-                  <linearGradient id="grad">
-                    <stop offset="0%" stopColor="#7afcd0" />
-                    <stop offset="100%" stopColor="#9d7bff" />
-                  </linearGradient>
-                </defs>
-                <circle className={`ring ${s.cls}`} cx="80" cy="80" r="70" strokeLinecap="round" stroke="url(#grad)" />
-              </svg>
-            </div>
-          ))}
+            );
+          })}
         </div>
         <div className="skill-tags">
           <div><span className="tag-label">ML / DL</span> TensorFlow &middot; Hugging Face Transformers &middot; scikit-learn &middot; NumPy &middot; Pandas &middot; Keras</div>
@@ -184,7 +272,7 @@ function App() {
               <div className="project-links">
                 {p.repo && <a href={p.repo} target="_blank" rel="noreferrer">Code</a>}
                 {p.demo && <a href={p.demo} target="_blank" rel="noreferrer">Live demo</a>}
-                {!p.repo && !p.demo && <span className="link-soon"></span>}
+                {!p.repo && !p.demo && <span className="link-soon">Links coming soon</span>}
               </div>
             </article>
           ))}
@@ -207,7 +295,9 @@ function App() {
           <a href="mailto:santhoshn642003@gmail.com">Email</a>
           <a href="https://www.linkedin.com/in/santhosh-naik-95355a228/" target="_blank" rel="noreferrer">LinkedIn</a>
           <a href="https://github.com/Santhosh642003" target="_blank" rel="noreferrer">GitHub</a>
-          <a href="tel:+18622376002">+1 862 237 6002</a>
+        </div>
+        <div className="contact-resume">
+          <ResumeViewer />
         </div>
       </section>
 
