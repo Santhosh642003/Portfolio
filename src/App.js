@@ -1,309 +1,611 @@
-import { useEffect, useState } from 'react';
-import './App.css';
+import { useEffect, useRef, useState } from "react";
+import { archive, github } from "./projects";
+import "./App.css";
+import FluidMotion from "./FluidMotion";
 
-const RESUME_URL = '/Santhosh_Naik_Resume.pdf';   // the real PDF (Open in new tab)
-const RESUME_IMG = '/Santhosh_Naik_Resume.png';   // page-1 image for the preview
-
-function ResumeViewer() {
-  const [open, setOpen] = useState(false);
-  const [loaded, setLoaded] = useState(false);
-
-  function toggle() {
-    setOpen((o) => {
-      const next = !o;
-      if (next) setLoaded(true); // lazy-load the PDF on first open
-      return next;
-    });
-  }
-
+const paper = "https://ieeexplore.ieee.org/abstract/document/10912300";
+const emotions = ["Happy", "Relaxed", "Sad", "Tense"];
+const stages = [
+  [
+    "01 / REQUEST",
+    "“Where is my order?”",
+    "A fictional customer asks about an order. This walkthrough illustrates the repository’s read-only order-status workflow.",
+  ],
+  [
+    "02 / CONTEXT",
+    "Facts before answers.",
+    "Authenticate the session, classify the request, and fetch the customer’s order state.",
+  ],
+  [
+    "03 / EVIDENCE",
+    "Find the applicable policy.",
+    "Retrieve policy context scoped to the order facts, then determine the supported outcome.",
+  ],
+  [
+    "04 / RESPONSE",
+    "Answer. Or hand off.",
+    "Explain the determination, or hand off when a reliable answer cannot be produced.",
+  ],
+];
+function Arrow() {
+  return <span aria-hidden="true">↗</span>;
+}
+function Spectrum({ large = false }) {
   return (
-    <div className={`resume-block ${open ? 'is-open' : ''}`}>
-      <button
-        className="resume-toggle"
-        onClick={toggle}
-        aria-expanded={open}
-        aria-controls="resume-panel"
-      >
-        <span className="resume-toggle__icon" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M14 3v4a1 1 0 0 0 1 1h4" />
-            <path d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2z" />
-            <line x1="9" y1="12" x2="15" y2="12" />
-            <line x1="9" y1="16" x2="13" y2="16" />
-          </svg>
-        </span>
-        <span className="resume-toggle__label">View résumé</span>
-        <span className="resume-toggle__chev" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <polyline points="6 9 12 15 18 9" />
-          </svg>
-        </span>
-      </button>
-
-      <div className="resume-panel" id="resume-panel" role="region" aria-label="Résumé preview">
-        <div className="resume-panel__inner">
-          <div className="resume-paper">
-            {loaded && (
-              <img
-                className="resume-paper__img"
-                src={RESUME_IMG}
-                alt="Résumé — first page"
-              />
-            )}
-            <div className="resume-paper__sheen" aria-hidden="true"></div>
-          </div>
-          <div className="resume-panel__bar">
-            <span className="resume-panel__hint">Preview &middot; first page</span>
-            <a className="resume-open" href={RESUME_URL} target="_blank" rel="noreferrer">
-              Open in new tab
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M15 3h6v6" /><path d="M10 14 21 3" />
-                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
-              </svg>
-            </a>
-          </div>
+    <div className={`spectrum ${large ? "large" : ""}`} aria-hidden="true">
+      {Array.from({ length: large ? 88 : 44 }, (_, i) => (
+        <i
+          key={i}
+          style={{
+            "--height": `${12 + Math.pow(Math.sin(i * 0.16), 2) * 75 * Math.sin(((i + 1) / (large ? 89 : 45)) * Math.PI)}%`,
+            "--delay": `${i * -0.13}s`,
+          }}
+        />
+      ))}
+    </div>
+  );
+}
+function Music() {
+  const [emotion, setEmotion] = useState("Happy");
+  const [playing, setPlaying] = useState(false);
+  const [error, setError] = useState("");
+  const audio = useRef(null);
+  useEffect(() => {
+    setPlaying(false);
+    setError("");
+  }, [emotion]);
+  async function toggle() {
+    if (playing) {
+      audio.current.pause();
+      setPlaying(false);
+    } else {
+      try {
+        await audio.current.play();
+        setPlaying(true);
+      } catch {
+        setError("Audio could not load. Please try again.");
+      }
+    }
+  }
+  return (
+    <div className={`music-stage ${playing ? "playing" : ""}`}>
+      <div className="stage-top">
+        <span>EMOTION → COMPOSITION</span>
+        <span>01: MIDI STUDIES</span>
+      </div>
+      <div className="piano-roll" aria-hidden="true">
+        {Array.from({ length: 36 }, (_, i) => (
+          <i
+            key={i}
+            style={{
+              left: `${(i * 13) % 96}%`,
+              top: `${12 + ((i * 17 + emotions.indexOf(emotion) * 11) % 75)}%`,
+              width: `${3 + (i % 4)}%`,
+            }}
+          />
+        ))}
+        <div className="playhead" />
+      </div>
+      <div className="music-controls">
+        <div className="emotion-tabs" aria-label="Sample emotion">
+          {emotions.map((e) => (
+            <button
+              key={e}
+              aria-pressed={emotion === e}
+              onClick={() => {
+                audio.current.pause();
+                setEmotion(e);
+              }}
+            >
+              {e}
+            </button>
+          ))}
         </div>
+        <button
+          className="play-button"
+          onClick={toggle}
+          aria-label={`${playing ? "Pause" : "Play"} ${emotion} sample`}
+        >
+          {playing ? "Ⅱ" : "▶"}
+        </button>
+      </div>
+      <audio
+        ref={audio}
+        src={`${process.env.PUBLIC_URL}/audio/${emotion.toLowerCase()}.mp3`}
+        onEnded={() => setPlaying(false)}
+        onError={() => {
+          setPlaying(false);
+          setError("Sample unavailable. Please try again.");
+        }}
+        preload="none"
+      />
+      <p className="stage-note">
+        Actual model-generated MIDI · 18-second synthesized excerpts
+      </p>
+      {error && <p role="status">{error}</p>}
+    </div>
+  );
+}
+function Support() {
+  const [step, setStep] = useState(0);
+  return (
+    <div className="support-stage">
+      <div className="stage-top">
+        <span>
+          <b className="status-dot" /> RESOLUTION WORKFLOW
+        </span>
+        <span>ILLUSTRATIVE WALKTHROUGH</span>
+      </div>
+      <div className="ticket">
+        <span className="eyebrow">{stages[step][0]}</span>
+        <h3>{stages[step][1]}</h3>
+        <p>{stages[step][2]}</p>
+      </div>
+      <div className="workflow" aria-label="Workflow steps">
+        {stages.map((s, i) => (
+          <button
+            key={s[0]}
+            onClick={() => setStep(i)}
+            aria-pressed={step === i}
+          >
+            <span>0{i + 1}</span>
+            {["Request", "Context", "Evidence", "Response"][i]}
+          </button>
+        ))}
+      </div>
+      <div className="stage-bottom">
+        <span>Synthetic data · In development</span>
+        <button onClick={() => setStep((step + 1) % 4)}>Next step →</button>
       </div>
     </div>
   );
 }
-
-const skills = [
-  { name: 'Python', level: 92 },
-  { name: 'PyTorch', level: 85 },
-  { name: 'NLP / LLMs', level: 88 },
-  { name: 'React', level: 80 },
-  { name: 'SQL', level: 75 },
-  { name: 'Docker', level: 70 },
-];
-
-const RING_CIRC = 2 * Math.PI * 70; // r = 70
-
-const projects = [
-  {
-    title: 'BloodBets',
-    blurb: 'Real-time AI battle royale betting platform. 50 LLM-driven fighters compete in a survival tournament while users place live bets and sponsor fighters mid-game.',
-    tags: ['SpacetimeDB', 'Groq Llama 3 70B', 'React', 'TypeScript'],
-    repo: 'https://github.com/Santhosh642003/BloodBet2',
-    demo: 'https://blood-bet.vercel.app/',
-  },
-  {
-    title: 'EmoMusicTransformer',
-    blurb: 'GPT-style Transformer that generates emotion-conditioned piano MIDI using FiLM conditioning on the EMOPIA dataset. Validation perplexity 1.89, with a live Gradio demo.',
-    tags: ['PyTorch', 'Transformers', 'FiLM', 'Gradio'],
-    repo: 'https://github.com/Santhosh642003/Emo_Music-Gen',
-  },
-  {
-    title: 'Multimodal TEC Forecasting',
-    blurb: 'Multimodal deep learning pipeline predicting global ionospheric TEC maps during geomagnetic storms, framed as residual prediction over a frozen NASA/IBM Surya foundation model. Validation RMSE 6.35 TECU, beating the persistence baseline.',
-    tags: ['PyTorch', 'Foundation Models', 'Multimodal', 'HPC'],
-  },
-  {
-    title: 'Detecting Psychological Defense Mechanisms',
-    blurb: 'NLP research for the PsyDefDetect BioNLP 2026 shared task. Fine-tuned RoBERTa beating MentalBERT, with SHAP analysis and statistical significance testing.',
-    tags: ['RoBERTa', 'Hugging Face', 'SHAP', 'NLP'],
-  },
-  {
-    title: 'Campus Wellness Platform',
-    blurb: 'Full-stack gamified learning app for NJIT: learning modules, quizzes, points and rewards, leaderboard, and a student dashboard with Google OAuth.',
-    tags: ['Node.js', 'Express', 'React', 'PostgreSQL'],
-  },
-  {
-    title: 'Interactive AI Education Tool',
-    blurb: 'Hands-on AI teaching tool on Raspberry Pi 3 with TensorFlow. Students record data, define classes, and train image, object, and text classifiers on CPU with no prior ML background.',
-    tags: ['TensorFlow', 'Raspberry Pi', 'Computer Vision', 'Education'],
-  },
-  {
-    title: 'Anime Recommender System',
-    blurb: 'Content-based anime recommender using cosine similarity over anime features to suggest similar titles from a user-selected anime.',
-    tags: ['Python', 'scikit-learn', 'Recommender Systems'],
-    repo: 'https://github.com/Santhosh642003/Anime-Recommendor-System',
-  },
-];
-
-function App() {
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [ringsIn, setRingsIn] = useState(false);
-
-  // fill rings to their level after first paint
-  useEffect(() => {
-    const id = requestAnimationFrame(() => setRingsIn(true));
-    return () => cancelAnimationFrame(id);
-  }, []);
-
-  function scrollTo(id) {
-    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
-    setMenuOpen(false);
-  }
-
-  // mouse-follow gradient blob
-  useEffect(() => {
-    const blob = document.getElementById('blob');
-    const moveBlob = (event) => {
-      if (!blob) return;
-      blob.animate(
-        { left: `${event.clientX}px`, top: `${event.clientY}px` },
-        { duration: 3000, fill: 'forwards' }
-      );
-    };
-    document.addEventListener('pointermove', moveBlob);
-    return () => document.removeEventListener('pointermove', moveBlob);
-  }, []);
-
-  // name scramble on hover
-  useEffect(() => {
-    const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    let interval = null;
-    const nameElement = document.querySelector('.Name');
-    if (!nameElement) return;
-    nameElement.onmouseover = () => {
-      let iteration = 0;
-      clearInterval(interval);
-      interval = setInterval(() => {
-        nameElement.innerText = nameElement.innerText
-          .split('')
-          .map((letter, index) =>
-            index < iteration
-              ? nameElement.dataset.value[index]
-              : letters[Math.floor(Math.random() * 26)]
-          )
-          .join('');
-        if (iteration >= nameElement.dataset.value.length) clearInterval(interval);
-        iteration += 1 / 3;
-      }, 30);
-    };
-  }, []);
-
+function Details({ children }) {
   return (
-    <div className="main-body">
-      <div id="blob" className="blob"></div>
-      <div className="overlay"></div>
-
-      <nav className="Navbar">
-        <span className="logo" onClick={() => scrollTo('hero')}>SN</span>
-        <button className="menu-toggle" onClick={() => setMenuOpen(!menuOpen)} aria-label="menu">☰</button>
-        <div className={`nav-links ${menuOpen ? 'open' : ''}`}>
-          <p onClick={() => scrollTo('about-section')}>About</p>
-          <p onClick={() => scrollTo('skill-section')}>Skills</p>
-          <p onClick={() => scrollTo('projects-section')}>Projects</p>
-          <p onClick={() => scrollTo('contact-section')}>Contact</p>
-        </div>
-      </nav>
-
-      <header id="hero" className="intro">
-        <div className="Greetings">Hello,</div>
-        <div className="Name" data-value="I'M SANTHOSH NAIK">I'M SANTHOSH NAIK</div>
-        <div className="bio">AI / ML Engineer &middot; NLP &amp; Multimodal Deep Learning</div>
-        <div className="hero-cta">
-          <button className="btn primary" onClick={() => scrollTo('projects-section')}>View Projects</button>
-          <a className="btn ghost" href="mailto:santhoshn642003@gmail.com">Get in touch</a>
-        </div>
-      </header>
-
-      <section id="about-section" className="about">
-        <h2 className="section-head">About Me</h2>
-        <p className="about-info">
-          I am an M.S. Artificial Intelligence student at NJIT focused on NLP, large language
-          models, and multimodal deep learning. I am a published IEEE author and I work as a
-          research assistant building deep learning pipelines for real scientific problems.
-        </p>
-        <p className="about-info">
-          What I care about most is shipping. I have built and deployed real systems &mdash; a
-          real-time multi-agent AI platform, an emotion-conditioned music generation model with a
-          live demo, and a full-stack gamified learning app used on campus &mdash; taking each from
-          idea to something people can actually use.
-        </p>
-        <p className="about-info">
-          My research spans medical speech recognition, mental-health NLP, and ionospheric
-          forecasting with foundation models. I move fast with modern AI tooling and care about
-          knowing when to trust a model and when to constrain it.
-        </p>
-      </section>
-
-      <section id="skill-section" className="skills">
-        <h2 className="section-head">Skills</h2>
-        <div className="skill-container">
-          {skills.map((s) => {
-            const offset = ringsIn ? RING_CIRC * (1 - s.level / 100) : RING_CIRC;
-            return (
-              <div className="skill" key={s.name}>
-                <div className="outer">
-                  <div className="inner">
-                    <div className="skillName">{s.name}</div>
-                    <div className="skillPct">{s.level}%</div>
-                  </div>
-                </div>
-                <svg width="160" height="160">
-                  <defs>
-                    <linearGradient id="grad">
-                      <stop offset="0%" stopColor="#7afcd0" />
-                      <stop offset="100%" stopColor="#9d7bff" />
-                    </linearGradient>
-                  </defs>
-                  <circle
-                    className="ring"
-                    cx="80" cy="80" r="70"
-                    strokeLinecap="round"
-                    stroke="url(#grad)"
-                    style={{ strokeDasharray: RING_CIRC, strokeDashoffset: offset }}
-                  />
-                </svg>
-              </div>
-            );
-          })}
-        </div>
-        <div className="skill-tags">
-          <div><span className="tag-label">ML / DL</span> TensorFlow &middot; Hugging Face Transformers &middot; scikit-learn &middot; NumPy &middot; Pandas &middot; Keras</div>
-          <div><span className="tag-label">Web &amp; Infra</span> Node.js &middot; Express &middot; PostgreSQL &middot; AWS &middot; Slurm / HPC &middot; Vercel &middot; Gradio</div>
-          <div><span className="tag-label">Languages</span> Python &middot; C++ &middot; C &middot; SQL &middot; JavaScript &middot; TypeScript</div>
-        </div>
-      </section>
-
-      <section id="projects-section" className="projects">
-        <h2 className="section-head">Projects</h2>
-        <div className="project-grid">
-          {projects.map((p) => (
-            <article className="project-card" key={p.title}>
-              <h3>{p.title}</h3>
-              <p>{p.blurb}</p>
-              <div className="project-tags">
-                {p.tags.map((t) => <span key={t}>{t}</span>)}
-              </div>
-              <div className="project-links">
-                {p.repo && <a href={p.repo} target="_blank" rel="noreferrer">Code</a>}
-                {p.demo && <a href={p.demo} target="_blank" rel="noreferrer">Live demo</a>}
-                {!p.repo && !p.demo && <span className="link-soon"></span>}
-              </div>
-            </article>
-          ))}
-        </div>
-        <div className="publication">
-          <span className="pub-badge">Publication</span>
-          D. S. Naik, N. Tiwari, K. S. Nataraj. &ldquo;Self-Training and Error Correction using
-          Large Language Models for Medical Speech Recognition.&rdquo; <em>IEEE ICEI 2024.</em>
-          <span className="pub-links">
-            <a href="https://ieeexplore.ieee.org/abstract/document/10912300" target="_blank" rel="noreferrer">IEEE Xplore</a>
-            <a href="https://www.researchgate.net/publication/389793950_Self-Training_and_Error_Correction_using_Large_Language_Models_for_Medical_Speech_Recognition" target="_blank" rel="noreferrer">ResearchGate</a>
-          </span>
-        </div>
-      </section>
-
-      <section id="contact-section" className="ContactMe">
-        <h2 className="section-head">Contact</h2>
-        <p className="contact-line">Open to AI / ML internships. The fastest way to reach me:</p>
-        <div className="contact-links">
-          <a href="mailto:santhoshn642003@gmail.com">Email</a>
-          <a href="https://www.linkedin.com/in/santhosh-naik-95355a228/" target="_blank" rel="noreferrer">LinkedIn</a>
-          <a href="https://github.com/Santhosh642003" target="_blank" rel="noreferrer">GitHub</a>
-        </div>
-        <div className="contact-resume">
-          <ResumeViewer />
-        </div>
-      </section>
-
-      <footer className="footer">Built by Santhosh Naik</footer>
-    </div>
+    <details className="details">
+      <summary>
+        Behind the build <span aria-hidden="true">+</span>
+      </summary>
+      <div>{children}</div>
+    </details>
   );
 }
-
+function App() {
+  const [menu, setMenu] = useState(false);
+  const [filter, setFilter] = useState("All");
+  const [search, setSearch] = useState("");
+  const filtered = archive.filter(
+    (p) =>
+      (filter === "All" || p.category === filter) &&
+      `${p.title} ${p.description} ${p.category}`
+        .toLowerCase()
+        .includes(search.toLowerCase()),
+  );
+  return (
+    <>
+      <a className="skip" href="#work">
+        Skip to work
+      </a>
+      <nav className="nav">
+        <a className="wordmark" href="#home" aria-label="Santhosh Naik home">
+          sn<span>.</span>
+        </a>
+        <button
+          className="menu-button"
+          aria-expanded={menu}
+          aria-controls="nav-links"
+          onClick={() => setMenu(!menu)}
+        >
+          {menu ? "Close" : "Menu"}
+        </button>
+        <div id="nav-links" className={menu ? "nav-links open" : "nav-links"}>
+          {[
+            ["work", "Selected work"],
+            ["archive", "Archive"],
+            ["about", "About"],
+          ].map(([id, label]) => (
+            <a key={id} href={`#${id}`} onClick={() => setMenu(false)}>
+              {label}
+            </a>
+          ))}
+          <a className="nav-contact" href="mailto:santhoshn642003@gmail.com">
+            Let’s talk <Arrow />
+          </a>
+        </div>
+      </nav>
+      <main>
+        <header className="hero" id="home">
+          <div className="hero-light" aria-hidden="true" />
+          <div className="hero-top eyebrow">
+            <span> SANTHOSH NAIK / AI ENGINEER</span>
+            <span>NEW JERSEY · NYC</span>
+          </div>
+          <div className="hero-copy">
+            <p className="overline">A little cinema. A lot of curiosity.</p>
+            <h1>
+              Intelligence,
+              <br />
+              with <em>feeling.</em>
+            </h1>
+            <p className="hero-description">
+              I build AI that works with language, creates music,
+              <br className="desktop-break" /> and turns complex questions into
+              useful actions.
+            </p>
+            <div className="hero-actions">
+              <a className="button primary" href="#work">
+                Explore my work <span>↓</span>
+              </a>
+              <a
+                className="text-link"
+                href={`${process.env.PUBLIC_URL}/Santhosh_Naik_Resume.pdf`}
+                target="_blank"
+                rel="noreferrer"
+              >
+                View résumé <Arrow />
+              </a>
+            </div>
+          </div>
+          <FluidMotion />
+          <div className="hero-art">
+            <Spectrum large />
+            <span className="signal-label">SIGNAL / SOUND / POSSIBILITY</span>
+          </div>
+          <div className="hero-bottom">
+            <span>M.S. ARTIFICIAL INTELLIGENCE · NJIT ’27</span>
+            <span>SCROLL TO EXPLORE ↓</span>
+            <span>RESEARCH MEETS MAKING</span>
+          </div>
+        </header>
+        <section id="work" className="section work">
+          <div className="section-heading">
+            <div>
+              <p className="eyebrow">01 / SELECTED WORK</p>
+              <h2>
+                Four stories.
+                <br />
+                <span>One curious mind.</span>
+              </h2>
+            </div>
+            <p>
+              From the first experiment to the system behind it.
+              <br />A selection of things I’m building and exploring.
+            </p>
+          </div>
+          <article className="feature">
+            <div className="feature-copy">
+              <span className="project-number">01 / APPLIED AI</span>
+              <h3>
+                Support
+                <br />
+                Resolution Agent<span className="accent">.</span>
+              </h3>
+              <p>
+                Good support starts with knowing what you can answer. A
+                policy-aware agent for a fictional subscription business, with
+                explicit decisions and a path to human handoff.
+              </p>
+              <div className="tags">
+                <span>Python</span>
+                <span>Policy retrieval</span>
+                <span>PostgreSQL</span>
+              </div>
+              <a
+                className="text-link"
+                href={github("support-resolution-agent")}
+                target="_blank"
+                rel="noreferrer"
+              >
+                Explore the repository <Arrow />
+              </a>
+              <Details>
+                <p>
+                  The current implementation includes an explicit state machine
+                  for read-only order-status queries. The repository also
+                  contains retrieval, provider adapters, database controls, and
+                  test suites. This is ongoing work with synthetic customers and
+                  orders, not a deployed customer service.
+                </p>
+              </Details>
+            </div>
+            <Support />
+          </article>
+          <article className="feature reverse">
+            <div className="feature-copy">
+              <span className="project-number">02 / GENERATIVE SOUND</span>
+              <h3>
+                Music, with
+                <br />
+                an emotional arc<span className="accent">.</span>
+              </h3>
+              <p>
+                EmoMusicTransformer explores a simple question: can a model
+                compose with a feeling in mind? A Transformer that generates
+                piano MIDI conditioned on emotion.
+              </p>
+              <div className="tags">
+                <span>PyTorch</span>
+                <span>FiLM</span>
+                <span>EMOPIA</span>
+              </div>
+              <a
+                className="text-link"
+                href={github("Emo_Music-Gen")}
+                target="_blank"
+                rel="noreferrer"
+              >
+                Explore the model <Arrow />
+              </a>
+              <Details>
+                <p>
+                  FiLM conditioning at every Transformer layer combines emotion
+                  labels with valence/arousal embeddings. Emotion trajectories
+                  enable changes during generation without retraining. The CV
+                  reports validation perplexity of 1.89; that measures token
+                  prediction, not perceived musical quality. Audio here is
+                  synthesized directly from repository MIDI outputs.
+                </p>
+              </Details>
+            </div>
+            <Music />
+          </article>
+          <div className="duo">
+            <article className="small-feature">
+              <div className="speech-art">
+                <div className="stage-top">
+                  <span>LANGUAGE / LISTENING</span>
+                  <span>RESEARCH</span>
+                </div>
+                <Spectrum />
+                <div className="transcript-art">
+                  Every word
+                  <br />
+                  <em>matters.</em>
+                </div>
+              </div>
+              <div className="small-copy">
+                <span className="project-number">03 / SPEECH RESEARCH</span>
+                <h3>
+                  Making medical speech
+                  <br />
+                  more reliable.
+                </h3>
+                <p>
+                  Self-training and LLM-based hypothesis selection for medical
+                  speech recognition. First-author research published at IEEE
+                  ICEI 2024.
+                </p>
+                <a
+                  className="text-link"
+                  href={paper}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Read the publication <Arrow />
+                </a>
+                <Details>
+                  <p>
+                    Research with Nitya Tiwari and K. S. Nataraj investigates
+                    Whisper ASR, self-training, and selection among candidate
+                    transcripts. The waveform above is decorative. The separate
+                    exploratory ChatGPT correction repository is listed in the
+                    archive; it is not presented as the paper’s implementation.
+                  </p>
+                </Details>
+              </div>
+            </article>
+            <article className="small-feature">
+              <div className="mosaic-art">
+                <div className="stage-top">
+                  <span>COLLABORATIVE INTELLIGENCE</span>
+                  <span>MOSAIC</span>
+                </div>
+                <div className="mosaic-tiles" aria-hidden="true">
+                  {["brief", "build", "connect", "merge"].map((x, i) => (
+                    <div key={x}>
+                      <span>0{i + 1}</span>
+                      <strong>{x}</strong>
+                      <div className="code-lines">
+                        <i />
+                        <i />
+                        <i />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div className="small-copy">
+                <span className="project-number">04 / DEVELOPER TOOLS</span>
+                <h3>
+                  Separate ideas.
+                  <br />
+                  Shared momentum.
+                </h3>
+                <p>
+                  Mosaic is a collaborative AI coding prototype: decompose a
+                  brief, work in parallel, and bring the pieces back together.
+                </p>
+                <a
+                  className="text-link"
+                  href={github("Mosaic")}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Explore Mosaic <Arrow />
+                </a>
+                <Details>
+                  <p>
+                    The project documents shared rooms, AI pair programming,
+                    interface contracts, and semantic merging. Structured output
+                    validation and post-merge syntax checks are documented; full
+                    type checking and sandboxed execution remain roadmap items.
+                  </p>
+                </Details>
+              </div>
+            </article>
+          </div>
+        </section>
+        <section className="section archive" id="archive">
+          <div className="section-heading">
+            <div>
+              <p className="eyebrow">02 / THE FULL COLLECTION</p>
+              <h2>
+                Always making
+                <br />
+                <span>something.</span>
+              </h2>
+            </div>
+            <p>
+              Research, products, prototypes, and early experiments.
+              <br />
+              The work behind the highlights.
+            </p>
+          </div>
+          <div className="archive-tools">
+            <div className="filters" aria-label="Filter projects">
+              {[
+                "All",
+                "Agents",
+                "Sound & language",
+                "Research",
+                "Web apps",
+                "Experiments",
+              ].map((f) => (
+                <button
+                  key={f}
+                  aria-pressed={filter === f}
+                  onClick={() => setFilter(f)}
+                >
+                  {f}
+                </button>
+              ))}
+            </div>
+            <label className="search">
+              <span className="sr-only">Search projects</span>
+              <input
+                type="search"
+                placeholder="Search the collection…"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+              <span aria-hidden="true">⌕</span>
+            </label>
+          </div>
+          <p className="result-count" role="status">
+            {filtered.length} projects
+          </p>
+          <div className="archive-grid">
+            {filtered.map((p) => (
+              <article className="archive-card" key={p.title}>
+                <div className="archive-meta">
+                  <span>{p.category}</span>
+                  <span>{p.status}</span>
+                </div>
+                <h3>
+                  {p.url ? (
+                    <a href={p.url} target="_blank" rel="noreferrer">
+                      {p.title} <Arrow />
+                    </a>
+                  ) : (
+                    p.title
+                  )}
+                </h3>
+                <p>{p.description}</p>
+                {!p.url && (
+                  <span className="no-code">
+                    {p.title === "Medical Speech Recognition" ? (
+                      <a href={paper} target="_blank" rel="noreferrer">
+                        Publication ↗
+                      </a>
+                    ) : (
+                      "Public code not linked"
+                    )}
+                  </span>
+                )}
+              </article>
+            ))}
+          </div>
+          {!filtered.length && (
+            <p className="empty">
+              No projects match. Try another term or category.
+            </p>
+          )}
+        </section>
+        <section className="section about" id="about">
+          <div>
+            <p className="eyebrow">03 / BEHIND THE SCENES</p>
+            <h2>
+              Engineer by practice.
+              <br />
+              <em>Storyteller at heart.</em>
+            </h2>
+          </div>
+          <div className="about-body">
+            <p>
+              I’m Santhosh, an M.S. Artificial Intelligence student at NJIT,
+              graduating in May 2027. My work moves between speech and language,
+              generative models, and applications that put AI to use.
+            </p>
+            <p>
+              I also love cinema. As vice president of In Motion, the film club
+              at IIIT Dharwad, I helped organize screenings and events. I’m
+              drawn to the way sound, structure, and small details come together
+              to make something memorable.
+            </p>
+            <div className="about-facts">
+              <span>IIIT DHARWAD → NJIT</span>
+              <span>SPEECH · SOUND · SYSTEMS</span>
+            </div>
+          </div>
+        </section>
+        <section className="contact section" id="contact">
+          <p className="eyebrow">04 / NEXT SCENE</p>
+          <h2>
+            Let’s build
+            <br />
+            something <em>good.</em>
+          </h2>
+          <div className="contact-row">
+            <p>
+              Exploring AI / ML and software engineering opportunities
+              <br />
+              for 2027, and thoughtful research collaborations.
+            </p>
+            <a
+              className="button primary"
+              href="mailto:santhoshn642003@gmail.com"
+            >
+              Start a conversation <Arrow />
+            </a>
+          </div>
+        </section>
+      </main>
+      <footer>
+        <a className="wordmark" href="#home">
+          sn<span>.</span>
+        </a>
+        <span>MADE WITH CURIOSITY. FRAMED WITH INTENTION.</span>
+        <div>
+          <a href={github("")} target="_blank" rel="noreferrer">
+            GitHub ↗
+          </a>
+          <a
+            href="https://www.linkedin.com/in/santhosh-naik-95355a228/"
+            target="_blank"
+            rel="noreferrer"
+          >
+            LinkedIn ↗
+          </a>
+          <a
+            href={`${process.env.PUBLIC_URL}/Santhosh_Naik_Resume.pdf`}
+            target="_blank"
+            rel="noreferrer"
+          >
+            Résumé ↗
+          </a>
+        </div>
+      </footer>
+    </>
+  );
+}
 export default App;
