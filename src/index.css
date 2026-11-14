@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap");
 * {
   box-sizing: border-box;
 }
@@ -8,8 +8,8 @@ html {
 }
 body {
   margin: 0;
-  background: #111210;
-  color: #eeeae0;
+  background: #0e0f14;
+  color: #e0e2ee;
   font-family: "DM Sans", Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
@@ -29,11 +29,11 @@ button {
   cursor: pointer;
 }
 ::selection {
-  background: #d7aa67;
-  color: #111210;
+  background: #67c3d7;
+  color: #0e0f14;
 }
 :focus-visible {
-  outline: 2px solid #e6b677;
+  outline: 2px solid #77d2e6;
   outline-offset: 5px;
 }
 button:disabled {
