@@ -1049,3 +1049,344 @@ footer > div {
     padding-right: 18px;
   }
 }
+
+/* Fluid composition: open surfaces, soft light, and pointer-responsive depth. */
+.fluid-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.95;
+  mask-image: linear-gradient(90deg, transparent 25%, #000 58%, #000);
+}
+.fluid-enabled .hero-art {
+  opacity: 0.12;
+}
+.pointer-trail {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 20;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.4s;
+  will-change: transform;
+}
+.pointer-trail.active {
+  opacity: 1;
+}
+.pointer-trail i {
+  position: absolute;
+  width: 38px;
+  height: 38px;
+  left: -19px;
+  top: -19px;
+  border: 1px solid #e5bd8366;
+  border-radius: 50%;
+  transition:
+    width 0.35s,
+    height 0.35s,
+    margin 0.35s,
+    background 0.35s;
+}
+.pointer-trail span {
+  position: absolute;
+  left: -160px;
+  top: -160px;
+  width: 320px;
+  height: 320px;
+  background: radial-gradient(circle, #ddab7010, transparent 68%);
+  border-radius: 50%;
+}
+.pointer-trail.over-control i {
+  width: 62px;
+  height: 62px;
+  margin: -12px;
+  background: #e5bd8309;
+}
+.hero {
+  overflow: clip;
+}
+.hero-copy {
+  animation: entrance 1.2s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+@keyframes entrance {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.hero h1 em {
+  display: inline-block;
+  animation: type-float 9s ease-in-out infinite;
+}
+@keyframes type-float {
+  50% {
+    transform: translateY(-7px) rotate(-1deg);
+  }
+}
+.hero-light {
+  width: 70%;
+  filter: blur(30px);
+  animation: light-drift 16s ease-in-out infinite alternate;
+}
+@keyframes light-drift {
+  to {
+    transform: translate(-12%, 8%) scale(1.15);
+  }
+}
+.nav {
+  border-bottom: 0;
+  background: transparent;
+}
+.nav-contact,
+.button {
+  border-radius: 100px;
+}
+.text-link {
+  transition:
+    gap 0.3s,
+    color 0.3s;
+}
+.text-link:hover {
+  gap: 36px;
+}
+.section-heading h2 {
+  max-width: 650px;
+}
+.work .section-heading {
+  margin-bottom: 90px;
+}
+.feature {
+  gap: 8%;
+  padding-bottom: 130px;
+}
+.support-stage,
+.music-stage {
+  border: 0;
+  border-radius: 24px;
+  box-shadow:
+    0 30px 95px #0003,
+    inset 0 1px 0 #ffffff09;
+  position: relative;
+  isolation: isolate;
+}
+.support-stage {
+  background:
+    radial-gradient(ellipse at 95% 0, #3c4c2f77, transparent 65%), #191d17;
+}
+.music-stage {
+  background:
+    radial-gradient(ellipse at 5% 0, #6b412c55, transparent 70%), #211b18;
+}
+.ticket {
+  border: 0;
+  border-left: 1px solid #a6b98b44;
+  border-radius: 0 18px 18px 0;
+  background: linear-gradient(90deg, #2b322377, transparent);
+}
+.workflow button {
+  border: 0;
+  border-bottom: 1px solid #78886655;
+  border-radius: 12px 12px 4px 4px;
+  transition:
+    background 0.3s,
+    color 0.3s,
+    transform 0.3s;
+}
+.workflow button:hover {
+  transform: translateY(-3px);
+}
+.stage-top,
+.stage-bottom {
+  border: 0;
+}
+.tags span {
+  border: 0;
+  padding-left: 0;
+  padding-right: 15px;
+  color: #aeb89b;
+}
+.tags span + span:before {
+  content: "·";
+  margin-right: 15px;
+  color: #6c775b;
+}
+.duo {
+  gap: 7%;
+  align-items: start;
+}
+.small-feature {
+  border: 0;
+  border-radius: 0;
+  overflow: visible;
+}
+.small-feature:nth-child(2) {
+  margin-top: 100px;
+}
+.speech-art,
+.mosaic-art {
+  border-radius: 24px;
+  box-shadow: 0 25px 70px #0002;
+}
+.small-copy {
+  padding: 32px 6px;
+}
+.small-copy .details {
+  max-width: 95%;
+}
+.speech-art {
+  background:
+    radial-gradient(ellipse at 10% 90%, #354c5055, transparent 70%), #1c1f20;
+}
+.mosaic-art {
+  background:
+    radial-gradient(ellipse at 90% 10%, #583b6844, transparent 70%), #1d1b22;
+}
+.mosaic-tiles {
+  animation: mosaic-float 10s ease-in-out infinite;
+}
+@keyframes mosaic-float {
+  50% {
+    transform: rotate(-2deg) translateY(-5px);
+  }
+}
+.archive,
+.about,
+.contact {
+  border-top: 0;
+  position: relative;
+}
+.archive:before,
+.about:before,
+.contact:before {
+  content: "";
+  position: absolute;
+  left: 6%;
+  right: 6%;
+  top: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #51553c80, transparent);
+}
+.archive-grid {
+  background: transparent;
+  border: 0;
+  gap: 14px 38px;
+}
+.archive-card {
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid #30372a;
+  border-radius: 0;
+  padding: 25px 8px;
+  min-height: 180px;
+  transition:
+    transform 0.4s,
+    background 0.4s;
+}
+.archive-card:hover {
+  background: linear-gradient(120deg, #aabb7b08, transparent);
+  transform: translateY(-4px);
+}
+.archive-card h3 a span {
+  transition: transform 0.35s;
+}
+.archive-card:hover h3 a span {
+  transform: translate(3px, -3px);
+}
+.filters button {
+  border-radius: 30px;
+}
+.search input {
+  border-radius: 30px;
+  background: transparent;
+}
+.about {
+  padding-top: 125px;
+  padding-bottom: 125px;
+}
+.contact {
+  background: radial-gradient(ellipse at 75% 110%, #b8803126, transparent 65%);
+}
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .support-stage,
+  .music-stage,
+  .speech-art,
+  .mosaic-art {
+    transform: perspective(1100px) rotateX(var(--rx, 0deg))
+      rotateY(var(--ry, 0deg));
+    transition: transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1);
+    will-change: transform;
+  }
+  .hero-actions .button,
+  .contact .button {
+    transform: translate(var(--mx, 0px), var(--my, 0px));
+    transition:
+      transform 0.3s ease-out,
+      background 0.3s;
+  }
+}
+@media (max-width: 700px) {
+  .fluid-canvas,
+  .pointer-trail {
+    display: none;
+  }
+  .work .section-heading {
+    margin-bottom: 30px;
+  }
+  .feature {
+    padding-bottom: 65px;
+  }
+  .small-feature:nth-child(2) {
+    margin-top: 20px;
+  }
+  .support-stage,
+  .music-stage,
+  .speech-art,
+  .mosaic-art {
+    border-radius: 18px;
+  }
+  .archive-grid {
+    gap: 8px;
+  }
+  .archive-card {
+    min-height: 155px;
+  }
+  .about {
+    padding-top: 65px;
+    padding-bottom: 65px;
+  }
+  .small-copy {
+    padding: 27px 4px;
+  }
+  .nav-links {
+    background: #171a14;
+  }
+  .hero h1 em {
+    animation: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .fluid-canvas,
+  .pointer-trail {
+    display: none;
+  }
+  .hero-copy {
+    opacity: 1;
+  }
+  .support-stage,
+  .music-stage,
+  .speech-art,
+  .mosaic-art,
+  .hero-actions .button,
+  .contact .button,
+  .archive-card:hover {
+    transform: none !important;
+  }
+}

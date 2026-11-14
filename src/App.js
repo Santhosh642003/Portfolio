@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { archive, github } from "./projects";
 import "./App.css";
+import FluidMotion from "./FluidMotion";
 
 const paper = "https://ieeexplore.ieee.org/abstract/document/10912300";
 const emotions = ["Happy", "Relaxed", "Sad", "Tense"];
@@ -245,6 +246,7 @@ function App() {
               </a>
             </div>
           </div>
+          <FluidMotion />
           <div className="hero-art">
             <Spectrum large />
             <span className="signal-label">SIGNAL / SOUND / POSSIBILITY</span>
