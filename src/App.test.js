@@ -40,3 +40,17 @@ test('audio is opt-in, emotion changes stop playback, and private projects have 
   expect(screen.getByText('Translating Toadstool').closest('a')).toBeNull();
   expect(container.textContent).not.toContain('TEC');
 });
+
+test('color grading switches the visual theme without interrupting project controls', () => {
+  const { unmount } = render(<App />);
+  expect(document.documentElement.dataset.grade).toBe('electric');
+  fireEvent.click(screen.getByRole('button', { name: '02 / Ultraviolet' }));
+  expect(document.documentElement.dataset.grade).toBe('ultraviolet');
+  expect(screen.getByRole('button', { name: '02 / Ultraviolet' })).toHaveAttribute('aria-pressed', 'true');
+  fireEvent.click(screen.getByRole('button', { name: '03 / Acid' }));
+  expect(document.documentElement.dataset.grade).toBe('acid');
+  fireEvent.click(screen.getByRole('button', { name: /Next step/ }));
+  expect(screen.getByText('Facts before answers.')).toBeInTheDocument();
+  unmount();
+  expect(document.documentElement.dataset.grade).toBeUndefined();
+});

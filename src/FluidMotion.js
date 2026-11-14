@@ -123,7 +123,7 @@ export default function FluidMotion() {
               if (!step) ctx.moveTo(px, py);
               else ctx.lineTo(px, py);
             }
-            ctx.strokeStyle = `rgba(${190 + line * 2},${125 + line * 3},${70 + line * 3},${0.1 + Math.sin((line / 30) * Math.PI) * 0.26})`;
+            ctx.strokeStyle = `hsla(${185 + line * 4.5}, 95%, 68%, ${0.18 + Math.sin((line / 30) * Math.PI) * 0.36})`;
             ctx.lineWidth = line % 5 === 0 ? 1.5 : 0.7;
             ctx.stroke();
           }

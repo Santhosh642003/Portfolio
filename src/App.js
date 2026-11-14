@@ -172,6 +172,13 @@ function Details({ children }) {
 }
 function App() {
   const [menu, setMenu] = useState(false);
+  const [grade, setGrade] = useState("electric");
+  useEffect(() => {
+    document.documentElement.dataset.grade = grade;
+    return () => {
+      delete document.documentElement.dataset.grade;
+    };
+  }, [grade]);
   const [filter, setFilter] = useState("All");
   const [search, setSearch] = useState("");
   const filtered = archive.filter(
@@ -221,11 +228,11 @@ function App() {
             <span>NEW JERSEY · NYC</span>
           </div>
           <div className="hero-copy">
-            <p className="overline">A little cinema. A lot of curiosity.</p>
+            <p className="overline">AI ENGINEERING × CREATIVE OBSESSION</p>
             <h1>
-              Intelligence,
+              <span className="headline-top">Built to think.</span>
               <br />
-              with <em>feeling.</em>
+              <em>Made to feel.</em>
             </h1>
             <p className="hero-description">
               I build AI that works with language, creates music,
@@ -246,6 +253,27 @@ function App() {
               </a>
             </div>
           </div>
+          <div className="grade-controls" aria-label="Color grade">
+            <span className="grade-label">SET THE MOOD</span>
+            {[
+              ["electric", "01 / Electric"],
+              ["ultraviolet", "02 / Ultraviolet"],
+              ["acid", "03 / Acid"],
+            ].map(([id, label]) => (
+              <button
+                key={id}
+                onClick={() => setGrade(id)}
+                aria-pressed={grade === id}
+              >
+                <i aria-hidden="true" />
+                {label}
+              </button>
+            ))}
+          </div>
+          <div className="hero-orbit" aria-hidden="true">
+            <span>HUMAN CURIOSITY</span>
+            <span>ARTIFICIAL INTELLIGENCE</span>
+          </div>
           <FluidMotion />
           <div className="hero-art">
             <Spectrum large />
@@ -257,6 +285,16 @@ function App() {
             <span>RESEARCH MEETS MAKING</span>
           </div>
         </header>
+        <div className="signal-strip" aria-hidden="true">
+          <div>
+            {Array.from({ length: 2 }, (_, i) => (
+              <span key={i}>
+                LANGUAGE <b>↗</b> SOUND <b>✳</b> AGENTS <b>↗</b> CINEMA <b>✳</b>{" "}
+                CURIOSITY <b>↗</b>{" "}
+              </span>
+            ))}
+          </div>
+        </div>
         <section id="work" className="section work">
           <div className="section-heading">
             <div>
