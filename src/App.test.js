@@ -30,13 +30,13 @@ test('walkthrough advances and mobile navigation closes after selection', () => 
 });
 test('audio is opt-in, emotion changes stop playback, and private projects have no links', async () => {
   const { container } = render(<App />);
-  expect(container.querySelector('audio')).not.toHaveAttribute('autoplay');
+  expect(container.querySelector('.music-stage audio')).not.toHaveAttribute('autoplay');
   fireEvent.click(screen.getByRole('button', { name: 'Play Happy sample' }));
   expect(await screen.findByRole('button', { name: 'Pause Happy sample' })).toBeInTheDocument();
   fireEvent.click(screen.getByRole('button', { name: 'Sad', exact: true }));
   expect(HTMLMediaElement.prototype.pause).toHaveBeenCalled();
   expect(screen.getByRole('button', { name: 'Play Sad sample' })).toBeInTheDocument();
-  expect(container.querySelector('audio').src).toContain('/audio/sad.mp3');
+  expect(container.querySelector('.music-stage audio').src).toContain('/audio/sad.mp3');
   expect(screen.getByText('Translating Toadstool').closest('a')).toBeNull();
   expect(container.textContent).not.toContain('TEC');
 });
