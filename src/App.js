@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { archive, github } from "./projects";
 import "./App.css";
+import StudioTerminal, { StudioRoom } from "./Studio";
 import FluidMotion from "./FluidMotion";
 
 const paper = "https://ieeexplore.ieee.org/abstract/document/10912300";
@@ -54,6 +55,16 @@ function Music() {
     setPlaying(false);
     setError("");
   }, [emotion]);
+  useEffect(() => {
+    const sync = (e) => {
+      if (e.target !== audio.current) {
+        audio.current?.pause();
+        setPlaying(false);
+      }
+    };
+    document.addEventListener("play", sync, true);
+    return () => document.removeEventListener("play", sync, true);
+  }, []);
   async function toggle() {
     if (playing) {
       audio.current.pause();
@@ -117,6 +128,7 @@ function Music() {
           setPlaying(false);
           setError("Sample unavailable. Please try again.");
         }}
+        onPause={() => setPlaying(false)}
         preload="none"
       />
       <p className="stage-note">
@@ -215,24 +227,33 @@ function App() {
               {label}
             </a>
           ))}
+          <a
+            className="terminal-nav"
+            href="#terminal"
+            onClick={() => setMenu(false)}
+          >
+            ⌘ Terminal
+          </a>
           <a className="nav-contact" href="mailto:santhoshn642003@gmail.com">
             Let’s talk <Arrow />
           </a>
         </div>
       </nav>
       <main>
-        <header className="hero" id="home">
+        <header className="hero studio-hero" id="home">
           <div className="hero-light" aria-hidden="true" />
           <div className="hero-top eyebrow">
             <span> SANTHOSH NAIK / AI ENGINEER</span>
             <span>NEW JERSEY · NYC</span>
           </div>
           <div className="hero-copy">
-            <p className="overline">AI ENGINEERING × CREATIVE OBSESSION</p>
+            <p className="overline">
+              SANTHOSH’S SIGNAL STUDIO / OPEN AFTER HOURS
+            </p>
             <h1>
-              <span className="headline-top">Built to think.</span>
+              <span className="headline-top">Enter the studio.</span>
               <br />
-              <em>Made to feel.</em>
+              <em>Follow the signal.</em>
             </h1>
             <p className="hero-description">
               I build AI that works with language, creates music,
@@ -253,6 +274,25 @@ function App() {
               </a>
             </div>
           </div>
+          <div className="studio-layout">
+            <StudioRoom />
+            <div className="studio-console-column">
+              <p className="studio-note">
+                <strong>
+                  A listening booth. A scoring desk. An agent console.
+                </strong>
+                Choose a station, or navigate the collection through the
+                terminal. Sound is yours to switch on.
+              </p>
+              <StudioTerminal
+                onGrade={setGrade}
+                onSearch={(value) => {
+                  setFilter("All");
+                  setSearch(value);
+                }}
+              />
+            </div>
+          </div>
           <div className="grade-controls" aria-label="Color grade">
             <span className="grade-label">SET THE MOOD</span>
             {[
@@ -270,10 +310,7 @@ function App() {
               </button>
             ))}
           </div>
-          <div className="hero-orbit" aria-hidden="true">
-            <span>HUMAN CURIOSITY</span>
-            <span>ARTIFICIAL INTELLIGENCE</span>
-          </div>
+
           <FluidMotion />
           <div className="hero-art">
             <Spectrum large />
@@ -310,7 +347,7 @@ function App() {
               <br />A selection of things I’m building and exploring.
             </p>
           </div>
-          <article className="feature">
+          <article className="feature" id="support">
             <div className="feature-copy">
               <span className="project-number">01 / APPLIED AI</span>
               <h3>
@@ -348,7 +385,7 @@ function App() {
             </div>
             <Support />
           </article>
-          <article className="feature reverse">
+          <article className="feature reverse" id="music">
             <div className="feature-copy">
               <span className="project-number">02 / GENERATIVE SOUND</span>
               <h3>
@@ -388,7 +425,7 @@ function App() {
             <Music />
           </article>
           <div className="duo">
-            <article className="small-feature">
+            <article className="small-feature" id="speech">
               <div className="speech-art">
                 <div className="stage-top">
                   <span>LANGUAGE / LISTENING</span>
@@ -432,7 +469,7 @@ function App() {
                 </Details>
               </div>
             </article>
-            <article className="small-feature">
+            <article className="small-feature" id="mosaic">
               <div className="mosaic-art">
                 <div className="stage-top">
                   <span>COLLABORATIVE INTELLIGENCE</span>
